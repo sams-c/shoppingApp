@@ -8,19 +8,28 @@ class Shopping {
   constructor() {
     this.retrieveItems();
 
-    shoppingListEl.addEventListener("click", this.findAndDelete.bind(this));
+    shoppingListEl.addEventListener("click", (e) => {
+      const clickedItem = e.target.closest(".list");
+      if (!clickedItem) return;
+      this.findAndDelete.bind(this)(clickedItem);
+    });
+
     addButtonEl.addEventListener("click", this.inputItem.bind(this));
   }
 
   inputItem(e) {
     e.preventDefault();
-    let id = new Date() + "";
+    let id = new Date() + 1 + "";
     this.item = inputFieldEl.value;
     this.inputArray.push([this.item, id]);
     localStorage.setItem("shopping", JSON.stringify(this.inputArray));
 
-    const newItemHTML = `<li class="list" data-id="${id}">${this.item}</li>`;
-    shoppingListEl.insertAdjacentHTML("afterbegin", newItemHTML);
+    const newItem = document.createElement("li");
+    newItem.classList.add("list");
+    newItem.dataset.id = id;
+    newItem.textContent = this.item;
+
+    shoppingListEl.appendChild(newItem);
     inputFieldEl.value = "";
   }
   retrieveItems() {
@@ -34,10 +43,9 @@ class Shopping {
 
   renderData() {
     if (this.inputArray.length === 0) {
-      console.log("Empty array");
       return;
     }
-    console.log(this.inputArray);
+
     let shoppingListHTML = "";
 
     this.inputArray.forEach((item) => {
@@ -46,21 +54,19 @@ class Shopping {
 
     shoppingListEl.insertAdjacentHTML("afterbegin", shoppingListHTML);
   }
-  findAndDelete(e) {
-    const clickedItem = e.target.closest(".list");
-    console.log("click", clickedItem);
+  findAndDelete(clickedItem) {
     if (!clickedItem) return;
     const itemId = clickedItem.dataset.id;
-    const foundItem = this.inputArray.find((item) => item[1] === itemId); // Find the item
-    if (foundItem) {
-      // Check if foundItem exists before using it
-      const foundItemIndex = this.inputArray.indexOf(foundItem);
-      shoppingListEl.children[foundItemIndex].remove(); // Remove from DOM directly
-      this.inputArray.splice(foundItemIndex, 1); // Remove from array
-      localStorage.setItem("shopping", JSON.stringify(this.inputArray)); // Update storage
-    } else {
-      console.log("Item not found"); // Optional: Log a message for debugging
+
+    const foundItemIndex = this.inputArray.findIndex(
+      (item) => item[1] === itemId
+    );
+    if (foundItemIndex === -1) {
+      return;
     }
+    shoppingListEl.children[foundItemIndex].remove();
+    this.inputArray.splice(foundItemIndex, 1); // Remove from array
+    localStorage.setItem("shopping", JSON.stringify(this.inputArray)); // Update storage
   }
 }
 
