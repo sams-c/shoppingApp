@@ -31,6 +31,7 @@ class Shopping {
 
     shoppingListEl.appendChild(newItem);
     inputFieldEl.value = "";
+    this.renderData();
   }
   retrieveItems() {
     const retrievedData = JSON.parse(localStorage.getItem("shopping"));
@@ -48,10 +49,13 @@ class Shopping {
 
     let shoppingListHTML = "";
 
-    this.inputArray.forEach((item) => {
+    // Iterate through the array from the last element to the first
+    for (let i = this.inputArray.length - 1; i >= 0; i--) {
+      const item = this.inputArray[i];
       shoppingListHTML += `<li class="list" data-id="${item[1]}">${item[0]}</li>`;
-    });
+    }
 
+    // Insert the entire HTML string at the beginning of the list
     shoppingListEl.insertAdjacentHTML("afterbegin", shoppingListHTML);
   }
   findAndDelete(clickedItem) {
