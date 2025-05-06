@@ -18,18 +18,19 @@ class Shopping {
   }
 
   inputItem(e) {
+    console.log("inputItem called", this.item, this.inputArray);
     e.preventDefault();
     let id = new Date() + 1 + "";
     this.item = inputFieldEl.value;
     this.inputArray.push([this.item, id]);
     localStorage.setItem("shopping", JSON.stringify(this.inputArray));
 
-    const newItem = document.createElement("li");
-    newItem.classList.add("list");
-    newItem.dataset.id = id;
-    newItem.textContent = this.item;
+    //const newItem = document.createElement("li");
+    //newItem.classList.add("list");
+    //newItem.dataset.id = id;
+    //newItem.textContent = this.item;
 
-    shoppingListEl.appendChild(newItem);
+    //shoppingListEl.appendChild(newItem);
     inputFieldEl.value = "";
     this.renderData();
   }
@@ -43,19 +44,19 @@ class Shopping {
   }
 
   renderData() {
+    shoppingListEl.innerHTML = "";
+
     if (this.inputArray.length === 0) {
       return;
     }
 
     let shoppingListHTML = "";
 
-    // Iterate through the array from the last element to the first
     for (let i = this.inputArray.length - 1; i >= 0; i--) {
       const item = this.inputArray[i];
       shoppingListHTML += `<li class="list" data-id="${item[1]}">${item[0]}</li>`;
     }
 
-    // Insert the entire HTML string at the beginning of the list
     shoppingListEl.insertAdjacentHTML("afterbegin", shoppingListHTML);
   }
   findAndDelete(clickedItem) {
@@ -65,13 +66,19 @@ class Shopping {
     const foundItemIndex = this.inputArray.findIndex(
       (item) => item[1] === itemId
     );
+
     if (foundItemIndex === -1) {
       return;
     }
-    shoppingListEl.children[foundItemIndex].remove();
-    this.inputArray.splice(foundItemIndex, 1); // Remove from array
-    localStorage.setItem("shopping", JSON.stringify(this.inputArray)); // Update storage
+
+    // Directly remove the clicked item from the using data-id
+    const elementToRemove = document.querySelector(`[data-id="${itemId}"]`);
+    if (elementToRemove) {
+      elementToRemove.remove();
+    }
+
+    this.inputArray.splice(foundItemIndex, 1);
+    localStorage.setItem("shopping", JSON.stringify(this.inputArray));
   }
 }
-
 const shoppingApp = new Shopping();
