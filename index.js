@@ -15,22 +15,21 @@ class Shopping {
     });
 
     addButtonEl.addEventListener("click", this.inputItem.bind(this));
+
+    inputFieldEl.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        this.inputItem.bind(this)();
+      }
+    });
   }
 
-  inputItem(e) {
+  inputItem() {
     console.log("inputItem called", this.item, this.inputArray);
-    e.preventDefault();
     let id = new Date() + 1 + "";
     this.item = inputFieldEl.value;
     this.inputArray.push([this.item, id]);
     localStorage.setItem("shopping", JSON.stringify(this.inputArray));
 
-    //const newItem = document.createElement("li");
-    //newItem.classList.add("list");
-    //newItem.dataset.id = id;
-    //newItem.textContent = this.item;
-
-    //shoppingListEl.appendChild(newItem);
     inputFieldEl.value = "";
     this.renderData();
   }
@@ -71,7 +70,6 @@ class Shopping {
       return;
     }
 
-    // Directly remove the clicked item from the using data-id
     const elementToRemove = document.querySelector(`[data-id="${itemId}"]`);
     if (elementToRemove) {
       elementToRemove.remove();
